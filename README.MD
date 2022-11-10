@@ -7,7 +7,7 @@ Programming Assignment: ROS Publisher/Subscriber
 
 Ros2 Humble
 
-## Install via conmmand line
+## Install via command line
 check dependencies
 ```
 rosdep install -i --from-path src --rosdistro humble -y

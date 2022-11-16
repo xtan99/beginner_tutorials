@@ -1,0 +1,14 @@
+launch:
+
+- arg:
+    name: "my_parameter"
+    default: "Just a random string"
+
+- node:
+    pkg: "beginner_tutorials"
+    exec: "talker"
+    name: "talker"
+    param:
+    -
+      name: "my_parameter"
+      value: "$(var my_parameter)"

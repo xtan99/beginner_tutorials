@@ -1,53 +1,102 @@
-// Copyright 2016 Open Source Robotics Foundation, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#include <rclcpp/logging.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
+#include "beginner_tutorials/srv/print_new_string.hpp"
 
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
+using namespace std::chrono_literals; // for use of time units: "ms", "s"
+using std::placeholders::_1;          // for use with binding Class member
+using std::placeholders::_2;          // callback function
 
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+// topic types
+using STRING    = std_msgs::msg::String;
+using PUBLISHER = rclcpp::Publisher<STRING>::SharedPtr;
+using TIMER     = rclcpp::TimerBase::SharedPtr;
 
-using namespace std::chrono_literals;
-
-/* This example creates a subclass of Node and uses std::bind() to register a
- * member function as a callback from the timer. */
+using SERVICE    = rclcpp::Service<beginner_tutorials::srv::PrintNewString>::SharedPtr;
+using PRINTNEWSTRING = beginner_tutorials::srv::PrintNewString;
+using REQUEST    = const std::shared_ptr<beginner_tutorials::srv::PrintNewString::Request>;
+using RESPONSE    = std::shared_ptr<beginner_tutorials::srv::PrintNewString::Response>;
 
 class MinimalPublisher : public rclcpp::Node {
- public:
-  MinimalPublisher() : Node("minimal_publisher"), count_(0) {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-    timer_ = this->create_wall_timer(
-        500ms, std::bind(&MinimalPublisher::timer_callback, this));
+public:
+  //////////////////////////
+  // Constructor
+  //////////////////////////
+  MinimalPublisher() :
+    Node("minimal_publisher"),
+    m_count_(0) {
+
+    /* 
+     * Create publisher with buffer size of 10 and frequency = 2 hz
+     */
+    auto topicName = "topic";
+    m_publisher_ = this->create_publisher<STRING> (topicName, 10);
+    auto topicCallbackPtr = std::bind (&MinimalPublisher::timer_callback, this);
+    m_timer_ = this->create_wall_timer (500ms, topicCallbackPtr);
+
+    /*
+     * Creates a service server (with a service name = "print_new_string")
+     */
+    auto serviceName = "print_new_string";
+    auto serviceCallbackPtr = std::bind (&MinimalPublisher::print_new, this, _1, _2);
+    m_service_ = create_service <PRINTNEWSTRING> (serviceName, serviceCallbackPtr);
+
+    this->declare_parameter("my_parameter", "Hello");
   }
 
- private:
-  void timer_callback() {
-    auto message = std_msgs::msg::String();
-    message.data = "Hey, how's it going? " + std::to_string(count_++);
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-    publisher_->publish(message);
+  private:
+  //////////////////////////
+  // Member Variables:
+  //////////////////////////
+  size_t    m_count_;
+  PUBLISHER m_publisher_;
+  TIMER     m_timer_;
+  SERVICE   m_service_;
+  
+  //////////////////////////
+  // Member Functions:
+  //////////////////////////
+
+  void print_new (REQUEST request,
+            RESPONSE response) {
+    response->new_string = request->s;
+    RCLCPP_INFO_STREAM (this->get_logger(), "Incoming request: " << response->new_string);
+    RCLCPP_INFO_STREAM (this->get_logger(), "Sending back response:" <<response->new_string);
+    std::vector<rclcpp::Parameter> new_parameter{rclcpp::Parameter("my_parameter", response->new_string)};
+    this->set_parameters(new_parameter);
   }
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-  size_t count_;
+
+  void timer_callback()  {
+    // Create the message to publish
+    std::string my_param =
+      this->get_parameter("my_parameter").get_parameter_value().get<std::string>();
+    while((this->get_parameter("my_parameter").get_parameter_value().get<std::string>()) == "None")
+    {
+      RCLCPP_ERROR_STREAM (this->get_logger(), "NOT A STRING");
+      RCLCPP_FATAL_STREAM (this->get_logger(), "Empty spaces entered, program shutting down");
+      exit(1);
+    }
+    auto message = STRING();
+    message.data = my_param + std::to_string (m_count_++);
+    RCLCPP_INFO_STREAM (this->get_logger(), "Publishing: " << message.data.c_str());
+    // Publish the message
+    m_publisher_->publish (message);
+  }
+
+    
+  
 };
 
 int main(int argc, char* argv[]) {
+  
+  // 1.) Initialize ROS 2 C++ client library
   rclcpp::init(argc, argv);
+
+  // 2.) Start processing
   rclcpp::spin(std::make_shared<MinimalPublisher>());
+
+  // 3.) Shutdown ROS 2
   rclcpp::shutdown();
+  
   return 0;
 }

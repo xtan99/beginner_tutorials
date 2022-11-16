@@ -1,7 +1,7 @@
 
 xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/cpp_pubsub$ cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem  src/
 Checking src/publisher_member_function.cpp ...
-1/2 files checked 56% done
+1/2 files checked 76% done
 Checking src/subscriber_member_function.cpp ...
 2/2 files checked 100% done
 nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]

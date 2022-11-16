@@ -1,3 +1,14 @@
+/**
+ * @file publisher_member_function.cpp
+ * @author Tanmay Haldankar (tanmay.n.haldankar99@gmail.com)
+ * @brief modified simple publisher from ROS2 Tutorials
+ * @version 0.1
+ * @date 2022-11-16
+ * 
+ * @copyright MIT License (c)
+ * 
+ */
+
 #include <rclcpp/logging.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -17,11 +28,17 @@ using PRINTNEWSTRING = beginner_tutorials::srv::PrintNewString;
 using REQUEST    = const std::shared_ptr<beginner_tutorials::srv::PrintNewString::Request>;
 using RESPONSE    = std::shared_ptr<beginner_tutorials::srv::PrintNewString::Response>;
 
+/**
+ * @brief Class to create a Publisher node
+ * 
+ */
+
 class MinimalPublisher : public rclcpp::Node {
 public:
-  //////////////////////////
-  // Constructor
-  //////////////////////////
+/**
+ * @brief Construct a new Minimal Publisher object
+ * 
+ */
   MinimalPublisher() :
     Node("minimal_publisher"),
     m_count_(0) {
@@ -41,24 +58,26 @@ public:
     auto serviceCallbackPtr = std::bind (&MinimalPublisher::print_new, this, _1, _2);
     m_service_ = create_service <PRINTNEWSTRING> (serviceName, serviceCallbackPtr);
 
-    this->declare_parameter("my_parameter", "Hello");
+    this->declare_parameter("my_parameter", "Hello");    //Declaring the parameter for publisher node which is the message that will be published
     RCLCPP_DEBUG_STREAM (this->get_logger(), "Testing initial parameter");
     RCLCPP_DEBUG_STREAM (this->get_logger(), "my_parameter");
   }
 
   private:
-  //////////////////////////
-  // Member Variables:
-  //////////////////////////
+
   size_t    m_count_;
   PUBLISHER m_publisher_;
   TIMER     m_timer_;
   SERVICE   m_service_;
   
-  //////////////////////////
-  // Member Functions:
-  //////////////////////////
 
+
+  /**
+   * @brief function for service server that sets response according to request
+   * 
+   * @param request The request variable sent to the server
+   * @param response The reponse variable to be sent back by the server
+   */
   void print_new (REQUEST request,
             RESPONSE response) {
     response->new_string = request->s;
@@ -68,6 +87,10 @@ public:
     this->set_parameters(new_parameter);
   }
 
+/**
+ * @brief callback funtion that sets and publishes the message
+ * 
+ */
   void timer_callback()  {
     // Create the message to publish
     std::string my_param =
@@ -95,6 +118,13 @@ public:
   
 };
 
+/**
+ * @brief main function
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char* argv[]) {
   
   // 1.) Initialize ROS 2 C++ client library

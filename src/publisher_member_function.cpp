@@ -42,6 +42,8 @@ public:
     m_service_ = create_service <PRINTNEWSTRING> (serviceName, serviceCallbackPtr);
 
     this->declare_parameter("my_parameter", "Hello");
+    RCLCPP_DEBUG_STREAM (this->get_logger(), "Testing initial parameter");
+    RCLCPP_DEBUG_STREAM (this->get_logger(), "my_parameter");
   }
 
   private:
@@ -72,9 +74,15 @@ public:
       this->get_parameter("my_parameter").get_parameter_value().get<std::string>();
     while((this->get_parameter("my_parameter").get_parameter_value().get<std::string>()) == "None")
     {
-      RCLCPP_ERROR_STREAM (this->get_logger(), "NOT A STRING");
-      RCLCPP_FATAL_STREAM (this->get_logger(), "Empty spaces entered, program shutting down");
+      RCLCPP_FATAL_STREAM (this->get_logger(), "NOT A STRING");
+      RCLCPP_FATAL_STREAM (this->get_logger(), "Program shutting down");
       exit(1);
+    }
+
+    while((this->get_parameter("my_parameter").get_parameter_value().get<std::string>()) == "Hello")
+    {
+      RCLCPP_WARN_STREAM (this->get_logger(), "Same string, try another maybe?");
+      break;
     }
     auto message = STRING();
     message.data = my_param + std::to_string (m_count_++);

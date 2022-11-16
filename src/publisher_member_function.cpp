@@ -111,7 +111,7 @@ class MinimalPublisher : public rclcpp::Node {
     while ((this->get_parameter("my_parameter")
                 .get_parameter_value()
                 .get<std::string>()) == "Hello") {
-      RCLCPP_WARN_STREAM(this->get_logger(), "Same string, try another maybe?");
+      RCLCPP_WARN_STREAM(this->get_logger(), "Same string, try another with launch file maybe?");
       break;
     }
     auto message = STRING();

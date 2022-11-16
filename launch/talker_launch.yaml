@@ -12,3 +12,8 @@ launch:
     -
       name: "my_parameter"
       value: "$(var my_parameter)"
+
+- node:
+    pkg: "beginner_tutorials"
+    exec: "listener"
+    name: "listener"

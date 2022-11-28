@@ -8,11 +8,15 @@
  * @copyright MIT License (c)
  *
  */
+#include <memory>
 
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include <rclcpp/logging.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
 #include "beginner_tutorials/srv/print_new_string.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
 
 using namespace std::chrono_literals;  // for use of time units: "ms", "s"
 using std::placeholders::_1;           // for use with binding Class member
@@ -31,6 +35,7 @@ using REQUEST =
 using RESPONSE =
     std::shared_ptr<beginner_tutorials::srv::PrintNewString::Response>;
 
+
 /**
  * @brief Class to create a Publisher node
  *
@@ -42,7 +47,7 @@ class MinimalPublisher : public rclcpp::Node {
    * @brief Construct a new Minimal Publisher object
    *
    */
-  MinimalPublisher() : Node("minimal_publisher"), m_count_(0) {
+  explicit MinimalPublisher(char * talk[]) : Node("minimal_publisher"), m_count_(0) {
     /*
      * Create publisher with buffer size of 10 and frequency = 2 hz
      */
@@ -66,6 +71,10 @@ class MinimalPublisher : public rclcpp::Node {
                    // message that will be published
     RCLCPP_DEBUG_STREAM(this->get_logger(), "Testing initial parameter");
     RCLCPP_DEBUG_STREAM(this->get_logger(), "my_parameter");
+
+    tf_static_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+    
+    this->make_transforms(talk);
   }
 
  private:
@@ -89,6 +98,30 @@ class MinimalPublisher : public rclcpp::Node {
     std::vector<rclcpp::Parameter> new_parameter{
         rclcpp::Parameter("my_parameter", response->new_string)};
     this->set_parameters(new_parameter);
+  }
+
+  void make_transforms(char * talk[])
+  {
+    geometry_msgs::msg::TransformStamped t;
+
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = "world";
+    t.child_frame_id = "talk";
+
+    t.transform.translation.x = atof(talk[2]);
+    t.transform.translation.y = atof(talk[3]);
+    t.transform.translation.z = atof(talk[4]);
+    tf2::Quaternion q;
+    q.setRPY(
+      atof(talk[5]),
+      atof(talk[6]),
+      atof(talk[7]));
+    t.transform.rotation.x = q.x();
+    t.transform.rotation.y = q.y();
+    t.transform.rotation.z = q.z();
+    t.transform.rotation.w = q.w();
+
+    tf_static_broadcaster_->sendTransform(t);
   }
 
   /**
@@ -121,6 +154,7 @@ class MinimalPublisher : public rclcpp::Node {
     // Publish the message
     m_publisher_->publish(message);
   }
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broadcaster_;
 };
 
 /**
@@ -135,7 +169,7 @@ int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
 
   // 2.) Start processing
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
+  rclcpp::spin(std::make_shared<MinimalPublisher>(argv));
 
   // 3.) Shutdown ROS 2
   rclcpp::shutdown();

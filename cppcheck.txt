@@ -1,8 +1,21 @@
 
-xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/cpp_pubsub$ cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem  src/
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials(Week11_HW)$ cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem  src/
 Checking src/publisher_member_function.cpp ...
-1/2 files checked 76% done
+1/2 files checked 79% done
 Checking src/subscriber_member_function.cpp ...
 2/2 files checked 100% done
 nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
 
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials(Week11_HW)$ cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem  test/
+Checking test/test_services_client.cpp ...
+Checking test/test_services_client.cpp: RMW_IMPLEMENTATION...
+1/2 files checked 56% done
+Checking test/test_services_server.cpp ...
+2/2 files checked 100% done
+test/test_services_client.cpp:36:0: style: The function 'SetUpTestCase' is never used. [unusedFunction]
+
+^
+test/test_services_client.cpp:41:0: style: The function 'TearDownTestCase' is never used. [unusedFunction]
+
+^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]

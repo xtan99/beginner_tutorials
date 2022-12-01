@@ -33,9 +33,15 @@ using namespace std::chrono_literals;
 class CLASSNAME(test_services_client, RMW_IMPLEMENTATION)
     : public ::testing::Test {
  public:
-  static void SetUpTestCase() { rclcpp::init(0, nullptr); }
+  static void SetUpTestCase() { 
+    rclcpp::init(0, nullptr);
+    std::cout << "DONE WITH SETUP" << std::endl; 
+    }
 
-  static void TearDownTestCase() { rclcpp::shutdown(); }
+  static void TearDownTestCase() { 
+    rclcpp::shutdown();
+    std::cout << "DONE WITH TEARDOWN" << std::endl;
+   }
 };
 
 /**

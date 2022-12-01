@@ -9,12 +9,12 @@
  *
  */
 #include <memory>
-
-#include "geometry_msgs/msg/transform_stamped.hpp"
 #include <rclcpp/logging.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
+
 #include "beginner_tutorials/srv/print_new_string.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_ros/static_transform_broadcaster.h"
 
@@ -35,7 +35,6 @@ using REQUEST =
 using RESPONSE =
     std::shared_ptr<beginner_tutorials::srv::PrintNewString::Response>;
 
-
 /**
  * @brief Class to create a Publisher node
  *
@@ -47,7 +46,8 @@ class MinimalPublisher : public rclcpp::Node {
    * @brief Construct a new Minimal Publisher object
    *
    */
-  explicit MinimalPublisher(char * talk[]) : Node("minimal_publisher"), m_count_(0) {
+  explicit MinimalPublisher(char* talk[])
+      : Node("minimal_publisher"), m_count_(0) {
     /*
      * Create publisher with buffer size of 10 and frequency = 2 hz
      */
@@ -72,8 +72,9 @@ class MinimalPublisher : public rclcpp::Node {
     RCLCPP_DEBUG_STREAM(this->get_logger(), "Testing initial parameter");
     RCLCPP_DEBUG_STREAM(this->get_logger(), "my_parameter");
 
-    tf_static_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
-    
+    tf_static_broadcaster_ =
+        std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+
     this->make_transforms(talk);
   }
 
@@ -100,8 +101,7 @@ class MinimalPublisher : public rclcpp::Node {
     this->set_parameters(new_parameter);
   }
 
-  void make_transforms(char * talk[])
-  {
+  void make_transforms(char* talk[]) {
     geometry_msgs::msg::TransformStamped t;
 
     t.header.stamp = this->get_clock()->now();
@@ -112,10 +112,7 @@ class MinimalPublisher : public rclcpp::Node {
     t.transform.translation.y = atof(talk[3]);
     t.transform.translation.z = atof(talk[4]);
     tf2::Quaternion q;
-    q.setRPY(
-      atof(talk[5]),
-      atof(talk[6]),
-      atof(talk[7]));
+    q.setRPY(atof(talk[5]), atof(talk[6]), atof(talk[7]));
     t.transform.rotation.x = q.x();
     t.transform.rotation.y = q.y();
     t.transform.rotation.z = q.z();
@@ -144,7 +141,8 @@ class MinimalPublisher : public rclcpp::Node {
     while ((this->get_parameter("my_parameter")
                 .get_parameter_value()
                 .get<std::string>()) == "Hello") {
-      RCLCPP_WARN_STREAM(this->get_logger(), "Same string, try another with launch file maybe?");
+      RCLCPP_WARN_STREAM(this->get_logger(),
+                         "Same string, try another with launch file maybe?");
       break;
     }
     auto message = STRING();

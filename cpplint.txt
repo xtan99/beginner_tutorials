@@ -1,11 +1,16 @@
-
-xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/src(Week10_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order publisher_member_function.cpp
- 
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/src(Week11_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order publisher_member_function.cpp 
 Done processing publisher_member_function.cpp
 
-xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/src(Week10_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order subscriber_member_function.cpp
-
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/src(Week11_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order subscriber_member_function.cpp 
 Done processing subscriber_member_function.cpp
+
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/test(Week11_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order test_services_server.cpp
+test_services_server.cpp:57:  Is this a non-const reference? If so, make const or use a pointer: rclcpp::Node& node  [runtime/references] [2]
+Done processing test_services_server.cpp
+Total errors found: 1
+
+xtan99@xtan99-Legion-5-Pro-16IAH7H:~/ros2_ws/src/beginner_tutorials/test(Week11_HW)$ cpplint --filter=-build/c++11,+build/c++17,-build/namespaces,-build/include_order test_services_client.cpp 
+Done processing test_services_client.cpp
 
 
 

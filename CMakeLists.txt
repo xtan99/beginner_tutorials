@@ -32,8 +32,7 @@ ament_target_dependencies(talker rclcpp std_msgs geometry_msgs tf2 tf2_ros)
 add_executable(listener src/subscriber_member_function.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)
 
-add_executable(simple_bag_recorder src/simple_bag_recorder.cpp)
-ament_target_dependencies(simple_bag_recorder rclcpp rosbag2_cpp std_msgs)
+
 
 rosidl_get_typesupport_target(cpp_typesupport_target
   ${PROJECT_NAME} "rosidl_typesupport_cpp")
@@ -128,7 +127,7 @@ target_link_libraries(talker "${cpp_typesupport_target}")
 install(TARGETS
   talker
   listener
-  simple_bag_recorder
+
   DESTINATION lib/${PROJECT_NAME})
 
 
